@@ -8,54 +8,46 @@ def main():
         for i in range(caves):
             cave_info.append([int(x) for x in input().split(" ")])
             cave_info[i] = cave_info[i][1:]
-        # print(cave_info)
-        end_cave = 0
-        end_cave_set = []
-        steps = 0
-        answer = None
-        current_value = None
-        while end_cave < caves:
-            # find minimal head value
-            # float('inf')
-            # float('-inf')
-            mini_cave_idx = None
-            mini_cave_value = None
-            for i in range(caves):
-                # already visited
-                if i in end_cave_set:
-                    continue
 
-                # first valid number
-                if mini_cave_idx == None:
-                    mini_cave_idx = i
-                    mini_cave_value = cave_info[i][0]
-                    continue
+        sorted_info = []
+        # find maximal value by each cave
+        # float('inf')
+        # float('-inf')
+        for i in range(caves):
+            maxi_monster_value = cave_info[i][0]
+            maxi_monster_idx = 0
+            for j in range(1, len(cave_info[i])):
+                if maxi_monster_value < cave_info[i][j]:
+                    maxi_monster_value = cave_info[i][j]
+                    maxi_monster_idx = j
+        
+            sorted_info.append((maxi_monster_value, maxi_monster_idx, i))
 
-                # normal case
-                if mini_cave_value > cave_info[i][0]:
-                    mini_cave_idx = i
-                    mini_cave_value = cave_info[i][0]
-            # end
-            if mini_cave_idx == None:
-                break
-            # record visited cave
-            end_cave_set.append(mini_cave_idx)
+        from operator import itemgetter, attrgetter
+        # sorted(student_tuples, key=itemgetter(2))
+        # sorted(student_tuples, key=itemgetter(1,2))
+        # sorted(student_tuples, key=itemgetter(2), reverse=True)
+        # [('john', 'A', 15), ('dave', 'B', 10), ('jane', 'B', 12)]
+        # sorted(student_objects, key=attrgetter('age'))
+        sorted_info = sorted(sorted_info, key=itemgetter(0), reverse=True)
+
+        # backtrace
+        answer = sorted_info[0][0] + 1
+        cave_idx = sorted_info[0][2]
+        monster_idx = sorted_info[0][1]
+        for i in range(caves):
+            if i != 0:
+                cave_idx = sorted_info[i][2]
+                monster_idx = len(cave_info[cave_idx]) - 1
 
             # start to walk
-            for i in range(len(cave_info[mini_cave_idx])):
-                if answer == None:
-                    answer = cave_info[mini_cave_idx][i] + 1
-                    current_value = answer + 1
-                    continue
-                
-                if current_value < cave_info[mini_cave_idx][i]:
-                    answer = cave_info[mini_cave_idx][i] + 1
-                    current_value = answer + 1
-                else:
-                    current_value += 1
-            
-            end_cave += 1
-        print(answer)
+            while monster_idx >= 0:
+                # print(i, cave_idx, monster_idx, answer)
+                if answer < cave_info[cave_idx][monster_idx]:
+                    answer = cave_info[cave_idx][monster_idx] + 1
+                monster_idx -= 1
+                answer -= 1
+        print(answer + 1)
         times -= 1
 
 main()
