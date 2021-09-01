@@ -34,50 +34,47 @@ def main():
         visited_cave = []
         answer = None
         power = None
-        steps = 0
         while len(visited_cave) < caves:
             candidate_idx = None
             candidate_answer = None
             candidate_power = None
-            candidate_steps = None
             for cave_idx in range(caves):
                 if cave_idx in visited_cave:
                     continue
                 
                 # first round
                 if answer == None:
-                    current_answer = cave_info[cave_idx][0] + 1
-                    current_power = cave_info[cave_idx][0] + 2
-                    current_steps = 1
+                    current_answer = None
+                    current_power = None
                 else:
                     current_answer = answer
                     current_power = power
-                    current_steps = steps
 
                 # walk
-                for monster_idx in range(1, len(cave_info[cave_idx])):
+                for monster_idx in range(0, len(cave_info[cave_idx])):
+                    if current_answer == None:
+                        current_answer = cave_info[cave_idx][monster_idx] + 1
+                        current_power = current_answer + 1
+                        continue
+
                     if current_power <= cave_info[cave_idx][monster_idx]:
-                        current_power = cave_info[cave_idx][monster_idx] + 1
                         # print("current_answer({}) = current_power({}) - current_steps({})".format(current_answer, current_power, current_steps))
-                        if power != None and power >= (current_power - current_steps):
-                            pass
-                        else:
-                            current_answer = current_power - current_steps
+                        current_answer -= current_power
+                        current_power = cave_info[cave_idx][monster_idx] + 1
+                        current_answer += current_power
+
                     current_power += 1
-                    current_steps += 1
 
                 # store info
                 if candidate_idx == None or candidate_answer > current_answer:
                     # print("store", cave_idx, current_answer, current_power)
                     candidate_idx = cave_idx
                     candidate_answer = current_answer
-                    candidate_steps = current_steps
                     candidate_power = current_power
             visited_cave.append(candidate_idx)
             # print("answer", candidate_answer, current_steps)
             answer = candidate_answer
             power = candidate_power
-            steps = current_steps
 
         print(answer)
         times -= 1
